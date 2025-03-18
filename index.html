@@ -1,44 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        .hidden{
-            display: none;
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #83a4d4, #b6fbff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
-        .box{
+
+        .box {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: rgba(0, 0, 0, 0.2) 0px 4px 10px;
+            width: 350px;
             text-align: center;
-            border: 1px solid black;
-            width: 300px;
-            height: 100%;
-            margin: 0 auto;
-            border-radius: 10px;
-            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
         }
-        select{
-            margin-bottom: 15px;
+
+        h2 {
+            color: #333;
         }
-        input{
-            margin-bottom: 15px;
+
+        select,
+        input,
+        button {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        input {
+            background: #f9f9f9;
+            margin-right: 0;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            position: relative;
+        }
+
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            border-radius: 45px;
+            z-index: -1;
+            background: rgba(0, 0, 0, 0.04);
+            transform: scaleX(0);
+            transform-origin: 50%;
+            transition: all 0.5s ease-out;
+        }
+
+        button:hover::before {
+            transform: scaleX(1);
+            z-index: 1;
+        }
+
+        #ketqua {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
+
 <body>
     <div class="box">
-        <div class="chonhinh">
-            <h2>Chọn Hình:</h2>
-            <select id="loaihinh" onchange="showInputs()">
-                <option value="hinhchunhat">Hình chữ nhật</option>
-                <option value="hinhtron">Hình tròn</option>
-                <option value="hinhtamgiac">Hình tam giác</option>
-            </select>
-        </div>
+        <h2>Chọn Hình:</h2>
+        <select id="loaihinh" onchange="showInputs()">
+            <option value="hinhchunhat">Hình chữ nhật</option>
+            <option value="hinhtron">Hình tròn</option>
+            <option value="hinhtamgiac">Hình tam giác</option>
+        </select>
         <div id="hinhchunhatInputs">
             <input type="number" id="chieudai">
             <input type="number" id="chieurong">
-        </div>  
+        </div>
         <div id="hinhtronInputs" class="hidden">
             <input type="number" id="bankinh">
         </div>
@@ -56,27 +115,53 @@
             document.getElementById("hinhchunhatInputs").classList.add("hidden");
             document.getElementById("hinhtronInputs").classList.add("hidden");
             document.getElementById("hinhtamgiacInputs").classList.add("hidden");
-            
+
             let shape = document.getElementById("loaihinh").value;
             document.getElementById(shape + "Inputs").classList.remove("hidden");
         }
+
         function calculate() {
             let shape = document.getElementById("loaihinh").value;
             let dientich, chuvi;
 
             if (shape === "hinhchunhat") {
-                    let length = parseFloat(document.getElementById("chieudai").value);
-                    let width = parseFloat(document.getElementById("chieurong").value);
-                    dientich = length * width;
-                    chuvi = 2 * (length + width);
+                let length = document.getElementById("chieudai").value.trim();
+                let width = document.getElementById("chieurong").value.trim();
+
+                if (length === "" || width === "") {
+                    document.getElementById("ketqua").innerText = "Bạn phải nhập đủ cạnh!";
+                    return;
+                }
+
+                length = parseFloat(length);
+                width = parseFloat(width);
+                dientich = length * width;
+                chuvi = 2 * (length + width);
             } else if (shape === "hinhtron") {
-                let radius = parseFloat(document.getElementById("bankinh").value);
+                let radius = document.getElementById("bankinh").value.trim();
+
+                if (radius === "") {
+                    document.getElementById("ketqua").innerText = "Bạn phải nhập đủ bán kính!";
+                    return;
+                }
+
+                radius = parseFloat(radius);
                 dientich = Math.PI * radius * radius;
                 chuvi = 2 * Math.PI * radius;
             } else if (shape === "hinhtamgiac") {
-                let a = parseFloat(document.getElementById("a").value);
-                let b = parseFloat(document.getElementById("b").value);
-                let c = parseFloat(document.getElementById("c").value);
+                let a = document.getElementById("a").value.trim();
+                let b = document.getElementById("b").value.trim();
+                let c = document.getElementById("c").value.trim();
+
+                if (a === "" || b === "" || c === "") {
+                    document.getElementById("ketqua").innerText = "Bạn phải nhập đủ các cạnh!";
+                    return;
+                }
+
+                a = parseFloat(a);
+                b = parseFloat(b);
+                c = parseFloat(c);
+
                 if (a + b > c && a + c > b && b + c > a) {
                     let s = (a + b + c) / 2;
                     dientich = Math.sqrt(s * (s - a) * (s - b) * (s - c));
@@ -86,8 +171,11 @@
                     return;
                 }
             }
-            document.getElementById("ketqua").innerText = `Diện tích: ${dientich.toFixed(2)}, Chu vi: ${chuvi.toFixed(2)}`;
+
+            document.getElementById("ketqua").innerText =
+                `Diện tích: ${dientich.toFixed(2)}, Chu vi: ${chuvi.toFixed(2)}`;
         }
     </script>
 </body>
+
 </html>
